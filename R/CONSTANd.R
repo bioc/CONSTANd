@@ -13,7 +13,7 @@
 # © Dirk Valkenborg & Jef Hooyberghs, 2014
 # Ported to R by Joris Van Houtven, 2020
 
-constand <- function(data, precision=1e-5, maxIterations=50){
+CONSTANd <- function(data, precision=1e-5, maxIterations=50){
   # Return the normalized version of the input data (matrix) as an ndarray, as 
   # well as the convergence trail (residual error after each iteration) and the 
   # row and column multipliers R and S.
