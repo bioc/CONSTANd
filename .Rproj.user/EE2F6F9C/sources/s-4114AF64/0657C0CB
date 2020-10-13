@@ -1,0 +1,24 @@
+{
+    "id": "0657C0CB",
+    "path": "~/Tests/CONSTANd/man/CONSTANd.Rd",
+    "project_path": "man/CONSTANd.Rd",
+    "type": "r_doc",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1599830861474.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "cursorPosition": "3,49",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1599831713,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1599831713209,
+    "read_only": false,
+    "read_only_alternatives": []
+}

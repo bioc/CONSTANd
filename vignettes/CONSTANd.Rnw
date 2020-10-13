@@ -1,0 +1,93 @@
+%\VignetteIndexEntry{CONSTANd mass spectrometry}
+%\VignetteKeywords{normalization mass-spectrometry}
+%\VignetteDepends{CONSTANd}
+%\VignettePackage{CONSTANd}
+
+\documentclass[10pt]{article}
+
+\title{Data Matrix Normalization by Raking to 1/n}
+\author{
+        Dirk Valkenborg, Jef Hooyberghs, Joris Van Houtven
+}
+
+
+\newcommand{\Rpackage}[1]{\textit{#1}}
+\newcommand{\Rfunction}[1]{\textit{#1}}
+\newcommand{\Robject}[1]{\texttt{#1}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
+\newcommand{\Rfunarg}[1]{{\textit{#1}}}
+
+\oddsidemargin  -0.2in
+\evensidemargin 0.0in
+\textwidth      6.9in
+\topmargin      -0.75in
+\textheight     9.25in
+
+\pagestyle{fancy}
+\rhead{CONSTANd}
+\rfoot{CONSTANd}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{CONSTd Introduction}
+The package \Rpackage(CONSTANd) is designed to ...
+
+The package \Rpackage(CONSTANd) will perform the following function:
+\begin{enumerate}
+\item
+Do something
+\item
+Do some more
+\end{enumerate}
+
+
+\subsection{Data matrix}
+The data matrix is an $m \times n$ matrix...
+
+\subsection{Optional arguments}
+
+Sometimes, there could be more assays in data file than we actually want
+to analyze. For example, we decided to ignore one or two of the arrays,
+because the images are bad and there are reasons to exlude these arrays.
+But instead to delete the related columns in data file, we simply change
+the experimental design file to just include those arrays we need to
+analyze. However, on the other hand, if there are more hybridization samples
+in experiment design file than in data file, it will produce an error,
+as this does not make sense.
+
+\subsection{CONSTANd Function Details}
+
+
+\subsubsection{Description of Results}
+
+
+\section{CONSTANd Function Demonstration}
+After loading the data file and experiment design file, the ABarray functions
+check to see if control signals are present in data file. If they are
+present, several plots for control assesement will be produced. The program
+then removes these control probes and perform QA analysis on raw data. It also
+produces a number of plots to visualize those QA assesement. After this,
+it performs quantile normalization and repeat QA assessment for
+quantile normalized data. Futhermore, fold changes between subgroups and
+\textit{t} test to identify differential expressed genes will be performed
+(and ANOVA if there are more than 2 subgroups in the group).
+
+\subsection{Required Libraries}
+No libraries are required to use this package.
+
+
+\subsection{Loading CONSTANd library}
+The \Rpackage{CONSTANd} has to be loaded to use the function.
+To load \Rpackage{CONSTANd}, type the following command after launching R.
+
+\begin{Schunk}
+\begin{Sinput}
+> library(CONSTANd)
+\end{Sinput}
+\end{Schunk}
+
+\end{document}
