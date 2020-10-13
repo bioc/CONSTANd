@@ -1,12 +1,11 @@
 Package: CONSTANd
 Type: Package
-Title: Data Matrix Normalization by Raking to 1/n
+Title: Data normalization by matrix raking
 Version: 0.8.0
 Date: 2020-09-11
 Authors@R: person("Geert Jan", "Bex", email="geertjan.bex@uhasselt.be", role=c("cre"))
 Author: Dirk Valkenborg, Jef Hooyberghs, Joris Van Houtven
-Description: Normalizes a data matrix by raking the m by n matrix
-  such that the row mean and column mean are equal to 1/n.
+Description: Normalizes the data matrix by raking the Nrows by Ncols matrix such that the row means and column means equal Ncols and Nrows, respectively.
 License: NPOSL-3.0 (https://opensource.org/licenses/NPOSL-3.0)
 Encoding: UTF-8
 LazyData: true

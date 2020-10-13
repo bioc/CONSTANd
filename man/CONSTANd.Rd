@@ -1,10 +1,9 @@
 \name{CONSTANd}
 \alias{CONSTANd}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Data Matrix Normalization by Raking to 1/n}
+\title{Data normalization by matrix raking}
 \description{
-  Normalizes a data matrix by raking the m by n matrix
-  such that the row mean and column mean are equal to 1/n.
+  Normalizes the data matrix by raking the Nrows by Ncols matrix such that the row means and column means equal Ncols and Nrows, respectively.
 }
 \usage{
 CONSTANd(data, h=1e-6, maxiterations=50)

@@ -5,7 +5,7 @@
 
 \documentclass[10pt]{article}
 
-\title{Data Matrix Normalization by Raking to 1/n}
+\title{Data normalization by matrix raking}
 \author{
         Dirk Valkenborg, Jef Hooyberghs, Joris Van Houtven
 }

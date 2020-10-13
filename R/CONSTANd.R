@@ -1,6 +1,6 @@
 # CONSTANd
 # Normalizes the data matrix <data> by raking the Nrows by Ncols matrix such that
-# the row mean and column mean equal Ncols and Nrows, respectively. Missing 
+# the row means and column means equal Ncols and Nrows, respectively. Missing 
 # information needs to be presented as nan values and not as zero values because 
 # CONSTANd employs the Matlab/NumPy functionality 'nanmean' that is able to ignore
 # nan-values when calculating the mean. The variable <maxIterations> is an
