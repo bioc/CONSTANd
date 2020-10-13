@@ -1,40 +1,56 @@
-CONSTANd <- function(data, h=1e-6, maxIterations=50){
+# CONSTANd
+# Normalizes the data matrix <data> by raking the Nrows by Ncols matrix such that
+# the row mean and column mean equal Ncols and Nrows, respectively. Missing 
+# information needs to be presented as nan values and not as zero values because 
+# CONSTANd employs the Matlab/NumPy functionality 'nanmean' that is able to ignore
+# nan-values when calculating the mean. The variable <maxIterations> is an
+# integer value that denotes the number of raking cycles. The variable <precision>
+# defines the stopping criteria based on the L1-norm as defined by
+# Friedrich Pukelsheim, Bruno Simeone in "On the Iterative Proportional
+# Fitting Procedure: Structure of Accumulation Points and L1-Error
+# Analysis"
+# 
+# © Dirk Valkenborg & Jef Hooyberghs, 2014
+# Ported to R by Joris Van Houtven, 2020
+
+constand <- function(data, precision=1e-5, maxIterations=50){
+  # Return the normalized version of the input data (matrix) as an ndarray, as 
+  # well as the convergence trail (residual error after each iteration) and the 
+  # row and column multipliers R and S.
   
-  m = nrow(data)
-  n = ncol(data)
+  Nrows = nrow(data)
+  Ncols = ncol(data)
+  TARGET = 1
   
-  f = vector(mode ="numeric", length=2*maxIterations)
-  R = 1+vector(mode ="numeric", length=m)
-  S = 1+vector(mode ="numeric", length=n)
-  
+  convergence_trail = rep(NA, 2*maxIterations)
   convergence = Inf
-  eta = 0
-  
+  R = rep(1, Nrows)
+  S = rep(1, Ncols)
   RM = rowMeans(data, na.rm = TRUE)
-  while (h<convergence && eta<maxIterations) {
-    
-    tempR = 1/n * 1/RM
+  i = 0
+  while (precision<convergence && i<maxIterations) {
+    # fit the rows
+    tempR = TARGET * 1/RM
     data = data * tempR
     R = R * tempR
     
     CM = colMeans(data, na.rm = TRUE)
-    f[2*eta+1] = m*0.5*sum(abs(CM - 1/n), na.rm = TRUE)
+    convergence_trail[2*i+1] = Nrows * sum(abs(CM - TARGET), na.rm = TRUE) / 2
     
-    
-    tempS = 1/n * 1/CM
+    # fit the columns
+    tempS = TARGET * 1/CM
     data = t(t(data) * tempS)
     S = S * tempS
     
     RM = rowMeans(data, na.rm = TRUE)
-    f[2*eta+2] = n*0.5*sum(abs(RM - 1/n), na.rm = TRUE)
-    
+    convergence_trail[2*i+2] = Ncols * sum(abs(RM - TARGET), na.rm = TRUE) / 2
   
-    convergence = f[2*eta+2]
-    eta = eta+1
-    
+    convergence = convergence_trail[2*i+2]
+    i = i+1
   }
-  
-  result = list("data" = data, "f" = f[1:(2*eta)], "R" = R, "S" = S)
+  if (i == maxIterations) {
+    warning(cat(sprintf("Max number of CONSTANd iterations (%i) reached. Attained precision: %f.5", maxIterations, convergence)))
+  }
+  result = list("normalized_data" = data, "convergence_trail" = convergence_trail[1:(2*i)], "R" = R, "S" = S)
   return(result)
-  
 }
