@@ -15,7 +15,7 @@ biocViews: MassSpectrometry, Cheminformatics, Normalization, Preprocessing, Diff
 NeedsCompilation: no
 Depends: 
 Imports:
-Suggests: BiocStyle, knitr, rmarkdown
+Suggests: BiocStyle, knitr, rmarkdown, SummarizedExperiment
 Enhances:
 SystemRequirements: 
 BugReports: 
