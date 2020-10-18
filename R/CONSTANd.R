@@ -13,14 +13,13 @@
 # © Dirk Valkenborg & Jef Hooyberghs, 2014
 # Ported to R by Joris Van Houtven, 2020
 
-CONSTANd <- function(data, precision=1e-5, maxIterations=50){
+CONSTANd <- function(data, precision=1e-5, maxIterations=50, target=1){
   # Return the normalized version of the input data (matrix) as an ndarray, as 
   # well as the convergence trail (residual error after each iteration) and the 
   # row and column multipliers R and S.
   
   Nrows = nrow(data)
   Ncols = ncol(data)
-  TARGET = 1
   
   convergence_trail = rep(NA, 2*maxIterations)
   convergence = Inf
@@ -30,20 +29,20 @@ CONSTANd <- function(data, precision=1e-5, maxIterations=50){
   i = 0
   while (precision<convergence && i<maxIterations) {
     # fit the rows
-    tempR = TARGET * 1/RM
+    tempR = target * 1/RM
     data = data * tempR
     R = R * tempR
     
     CM = colMeans(data, na.rm = TRUE)
-    convergence_trail[2*i+1] = Nrows * sum(abs(CM - TARGET), na.rm = TRUE) / 2
+    convergence_trail[2*i+1] = Nrows * sum(abs(CM - target), na.rm = TRUE) / 2
     
     # fit the columns
-    tempS = TARGET * 1/CM
+    tempS = target * 1/CM
     data = t(t(data) * tempS)
     S = S * tempS
     
     RM = rowMeans(data, na.rm = TRUE)
-    convergence_trail[2*i+2] = Ncols * sum(abs(RM - TARGET), na.rm = TRUE) / 2
+    convergence_trail[2*i+2] = Ncols * sum(abs(RM - target), na.rm = TRUE) / 2
   
     convergence = convergence_trail[2*i+2]
     i = i+1
