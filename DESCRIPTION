@@ -3,8 +3,10 @@ Type: Package
 Title: Data normalization by matrix raking
 Version: 0.99.0
 Date: 2020-10-18
-Authors@R: person("Geert Jan", "Bex", email="geertjan.bex@uhasselt.be", role=c("cre"))
-Author: Joris Van Houtven, Jef Hooyberghs, Dirk Valkenborg
+Authors@R: c(person("Geert Jan", "Bex", email="geertjan.bex@uhasselt.be", role=c("trl")),
+			 person("Joris", "Van Houtven", email="joris.vanhoutven@uhasselt.be", role=c("trl")),
+			 person("Jef", "Hooyberghs", role=c("aut")),
+			 person("Dirk", "Valkenborg", email="dirk.valkenborg@uhasselt.be", role=c("aut")))
 Description: Normalizes the data matrix by raking the Nrows by Ncols matrix such that the row means and column means equal 1, allowing for comparison of values between samples within the same and even across different CONSTANd-normalized data matrices.
 License: NPOSL-3.0 (https://opensource.org/licenses/NPOSL-3.0)
 Encoding: UTF-8
@@ -13,23 +15,12 @@ biocViews: MassSpectrometry, Cheminformatics, Normalization, Preprocessing, Diff
 NeedsCompilation: no
 Depends: 
 Imports:
-Suggests:
+Suggests: BiocStyle, knitr, rmarkdown
 Enhances:
 SystemRequirements: 
 BugReports: 
 URL: qcquan.net/constand
 Video: 
 Collates: 
+VignetteBuilder: knitr
 
-ASSUMPTIONS
-
-GITHUB (public)
-
-Missing information needs to
-be presented as nan values and not as zero values, because CONSTANd is able to ignore
-nan-values when calculating the mean. The variable <maxIterations> is an
-integer value that denotes the number of raking cycles. The variable <precision>
-defines the stopping criteria based on the L1-norm as defined by
-Friedrich Pukelsheim, Bruno Simeone in "On the Iterative Proportional
-Fitting Procedure: Structure of Accumulation Points and L1-Error
-Analysis
