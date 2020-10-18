@@ -1,13 +1,35 @@
 Package: CONSTANd
 Type: Package
 Title: Data normalization by matrix raking
-Version: 0.8.0
-Date: 2020-09-11
+Version: 0.99.0
+Date: 2020-10-18
 Authors@R: person("Geert Jan", "Bex", email="geertjan.bex@uhasselt.be", role=c("cre"))
-Author: Dirk Valkenborg, Jef Hooyberghs, Joris Van Houtven
-Description: Normalizes the data matrix by raking the Nrows by Ncols matrix such that the row means and column means equal Ncols and Nrows, respectively.
+Author: Joris Van Houtven, Jef Hooyberghs, Dirk Valkenborg
+Description: Normalizes the data matrix by raking the Nrows by Ncols matrix such that the row means and column means equal 1, allowing for comparison of values between samples within the same and even across different CONSTANd-normalized data matrices.
 License: NPOSL-3.0 (https://opensource.org/licenses/NPOSL-3.0)
 Encoding: UTF-8
 LazyData: true
-biocViews: MassSpectrometry, Cheminformatics, Normalization
+biocViews: MassSpectrometry, Cheminformatics, Normalization, Preprocessing, DifferentialExpression, Genetics, Transcriptomics, Proteomics
 NeedsCompilation: no
+Depends: 
+Imports:
+Suggests:
+Enhances:
+SystemRequirements: 
+BugReports: 
+URL: qcquan.net/constand
+Video: 
+Collates: 
+
+ASSUMPTIONS
+
+GITHUB (public)
+
+Missing information needs to
+be presented as nan values and not as zero values, because CONSTANd is able to ignore
+nan-values when calculating the mean. The variable <maxIterations> is an
+integer value that denotes the number of raking cycles. The variable <precision>
+defines the stopping criteria based on the L1-norm as defined by
+Friedrich Pukelsheim, Bruno Simeone in "On the Iterative Proportional
+Fitting Procedure: Structure of Accumulation Points and L1-Error
+Analysis
