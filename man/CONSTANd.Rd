@@ -27,9 +27,10 @@ CONSTANd(data, precision=1e-5, maxIterations=50, target=1)
   \item{S}{Column multipliers in the `K=RAS` formulation of the problem.}
 }
 
-\author{Joris Van Houtven (joris.vanhoutven@uhasselt.be), Jef Hooyberghs <jef.hooyberghs@uhasselt.be>, Dirk Valkenborg <dirk.valkenborg@uhasselt.be>}
+\author{Joris Van Houtven (joris.vanhoutven@uhasselt.be), Geert Jan Bex <geertjan.bex@uhasselt.be>, Dirk Valkenborg <dirk.valkenborg@uhasselt.be>}
 
 \examples{
+\dontrun{
 # generic use
 normalized_matrix <- CONSTANd(data_matrix)$normalized_data
 
@@ -40,6 +41,7 @@ result <- CONSTANd(data_matrix, precision=1e-3, maxIterations=30)$normalized_dat
 normalized_matrix <- result$normalized_matrix
 num_iterations_performed <- length(result$convergence_trail)
 attained_precision <- result$convergence_trail[num_iterations_performed]
+}
 }
 
 \references{
