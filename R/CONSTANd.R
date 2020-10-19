@@ -9,18 +9,18 @@
 # Friedrich Pukelsheim, Bruno Simeone in "On the Iterative Proportional
 # Fitting Procedure: Structure of Accumulation Points and L1-Error
 # Analysis"
-# 
-# © Dirk Valkenborg & Jef Hooyberghs, 2014
+#
+# (c) Dirk Valkenborg & Jef Hooyberghs, 2014
 # Ported to R by Joris Van Houtven, 2020
 
 CONSTANd <- function(data, precision=1e-5, maxIterations=50, target=1){
-  # Return the normalized version of the input data (matrix) as an ndarray, as 
-  # well as the convergence trail (residual error after each iteration) and the 
+  # Return the normalized version of the input data (matrix) as an ndarray, as
+  # well as the convergence trail (residual error after each iteration) and the
   # row and column multipliers R and S.
-  
+
   Nrows = nrow(data)
   Ncols = ncol(data)
-  
+
   convergence_trail = rep(NA, 2*maxIterations)
   convergence = Inf
   R = rep(1, Nrows)
@@ -32,18 +32,18 @@ CONSTANd <- function(data, precision=1e-5, maxIterations=50, target=1){
     tempR = target * 1/RM
     data = data * tempR
     R = R * tempR
-    
+
     CM = colMeans(data, na.rm = TRUE)
     convergence_trail[2*i+1] = Nrows * sum(abs(CM - target), na.rm = TRUE) / 2
-    
+
     # fit the columns
     tempS = target * 1/CM
     data = t(t(data) * tempS)
     S = S * tempS
-    
+
     RM = rowMeans(data, na.rm = TRUE)
     convergence_trail[2*i+2] = Ncols * sum(abs(RM - target), na.rm = TRUE) / 2
-  
+
     convergence = convergence_trail[2*i+2]
     i = i+1
   }
