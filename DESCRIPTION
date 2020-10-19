@@ -3,22 +3,21 @@ Type: Package
 Title: Data normalization by matrix raking
 Version: 0.99.0
 Date: 2020-10-18
-Authors@R: c(person("Geert Jan", "Bex", email="geertjan.bex@uhasselt.be", role=c("trl")),
-			 person("Joris", "Van Houtven", email="joris.vanhoutven@uhasselt.be", role=c("trl")),
-			 person("Jef", "Hooyberghs", role=c("aut")),
-			 person("Dirk", "Valkenborg", email="dirk.valkenborg@uhasselt.be", role=c("aut")))
+Authors@R: c(person("Joris", "Van Houtven", email="joris.vanhoutven@uhasselt.be", role=c("aut","trl")),
+			 person("Geert Jan", "Bex", email="geertjan.bex@uhasselt.be", role=c("trl")),
+			 person("Dirk", "Valkenborg", email="dirk.valkenborg@uhasselt.be", role=c("aut", "cre")))
 Description: Normalizes the data matrix by raking the Nrows by Ncols matrix such that the row means and column means equal 1, allowing for comparison of values between samples within the same and even across different CONSTANd-normalized data matrices.
-License: NPOSL-3.0 (https://opensource.org/licenses/NPOSL-3.0)
+License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 biocViews: MassSpectrometry, Cheminformatics, Normalization, Preprocessing, DifferentialExpression, Genetics, Transcriptomics, Proteomics
 NeedsCompilation: no
 Depends: 
 Imports:
-Suggests: BiocStyle, knitr, rmarkdown, SummarizedExperiment
+Suggests: BiocStyle, knitr, rmarkdown, SummarizedExperiment, dplyr, tibble, tidyr, ggplot2, gridExtra
 Enhances:
 SystemRequirements: 
-BugReports: 
+BugReports: https://gitlab.com/uhasselt-bioinfo/constand-r/
 URL: qcquan.net/constand
 Video: 
 Collates: 
