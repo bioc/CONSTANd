@@ -1,0 +1,177 @@
+---
+title: "CONSTANd"
+shorttitle: "Data normalization by matrix raking"
+abstract: >
+  Normalizes the data matrix by raking the Nrows by Ncols matrix such that the row means and column means equal 1, allowing for comparison of values between samples within the same and even across different CONSTANd-normalized data matrices.
+author:
+- name: "Joris Van Houtven"
+- name: "Geert Jan Bex"
+- name: "Dirk Valkenborg"
+  email: dirk.valkenborg@uhasselt.be
+date: "10/18/2020"
+output: BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{CONSTANd}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8} 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+library(gridExtra)
+```
+
+# Introduction
+
+CONSTANd normalization has been proven to work on [mass spectrometry intensity values](https://doi.org/10.1074/mcp.M115.056911) (Maes et al.) in shotgun proteomics and on [RNA-seq count data](https://scholar.google.com/scholar?hl=nl&as_sdt=0%2C5&q=Constrained+standardization+of+count+data+from+massive+parallel+sequencing+joris+van+houtven) (Van Houtven et al.), but is in principle applicable to any kind of quantification matrices. It normalizes the data matrix `data` by raking (using the RAS method by Bacharach, see references) the Nrows by Ncols matrix such that the row means and column means equal 1. The result is a normalized data matrix `K=RAS`, a product of row mulipliers `R` and column multipliers `S` with the original matrix `A`. Missing information needs to be presented as `NA` values and not as zero values, because CONSTANd is able to ignore missing values when calculating the mean.
+
+## Getting started
+The \Rpackage{CONSTANd} has to be loaded to use the function.
+To load \Rpackage{CONSTANd}, type the following command after launching R.
+```{r CONSTANd}
+#install.packages("BiocManager")
+#BiocManager::install("CONSTANd")
+library(CONSTANd)
+```
+
+## Data assumptions
+To warrant that the normalization procedure itself is not biased, three assumptions about the data are made (as for any type of data-driven normalization method) which may be verified by making MA-plots:
+
+- __The majority of entities peptides/genes/... are not differentially expressed__, to avoid a bias in the estimate of the mean value. It is assumed that up-down shifts are not due to biological causes. The reference set used in the normalization step is the set of all peptides identified in the experiment.<br>
+_MA-plot: the observations form a single 'cloud' with a dense center and less dense edges, as opposed to, for instance, two clouds or a cloud with uniform density_.
+- __The number of up-regulated peptides/genes/... is roughly equal to the number of down-regulated ones__. If the data were skewed, this would lead to a bias in the normalization result.<br>
+_MA-plot: the cloud of observations exhibits a bilateral symmetry about some axis (usually horizontal, but inclinations may occur)_.
+- __Any systematic bias present is linearly proportional to the magnitude of the quantification values__. Only this way it is possible to find one appropriate normalization factor for each quantification sample.<br>
+_MA-plot: the axis of bilateral symmetry is a straight line (which may be inclined), i.e., the moving average M-values of the central cloud form an approximately __straight__ line_.
+
+# Normalizing a data matrix (single assay)
+The data matrix is an `Nrows` by `Ncols` matrix (e.g. an `assay` from a `SummarizedExperiment`), representing quantification values of any kind, as long as they form an __identically processed (sub)set (IPS)__. An IPS consists of measurements from biological samples who have been processed from biological harvesting of the tissue to the detection and quantitation of the entities of interest (RNA, proteins, ...) in near-identical fashion. In practice, this means that there exist no factors (_except_ those of _biological interest_) which may cause a systematic bias in the quantification values. One _counter_example in proteomics is samples measured on a different day or a different instrument, one _counter_example in RNA-seq would be samples measured after using different library preparation protocols. In the next section, we demonstrate how in such such cases the IPSs are normalized separately as if they were individual assays (see this section), after which they may be re-combined.
+
+First, let's load (after unzipping) the 'Leishmania' [mRNA-level data set from GEO](https://ftp.ncbi.nlm.nih.gov/geo/series/GSE95nnn/GSE95353/suppl/GSE95353_SL_SEQ_LOGSTAT_counttable.txt.gz) (Gene Expression Omnibus) with identifier GSE95353. <!--Cuypers, B., Domagalska, M.A., Meysman, P. et al. Multiplexed Spliced-Leader Sequencing: A high-throughput, selective method for RNA-seq in Trypanosomatids . Sci Rep 7, 3725 (2017). https://doi.org/10.1038/s41598-017-03987-0-->
+```{r}
+P_df = "GSE95353_SL_SEQ_LOGSTAT_counttable.txt"
+leish <- read.csv(P_df, sep='\t')
+```
+
+We only need the LOG and STAT samples, which correspond to biological quadruplicates of Leishmania in two lifestages (LOG and STAT).
+```{r}
+rownames(leish) <- leish$gene
+leish <- leish[, c("SL.LOG1",	"SL.LOG2",	"SL.LOG3",	"SL.LOG4",	"SL.STAT1",	"SL.STAT2",	"SL.STAT3",	"SL.STAT4")]
+conditions <- c(rep("LOG", 4), rep("STAT", 4))
+```
+
+Let's remove genes with low count numbers (`median > 0`) for good practice, and make sure that zero counts are replaced by `NA` to use CONSTANd.
+```{r}
+# first set NA to 0 for clculating the row medians
+leish[is.na(leish)] <- 0
+leish <- leish[apply(leish, 1, median, na.rm = F) > 0,]
+# now set 0 to NA for using CONSTANd
+leish[leish == 0] <- NA
+leish.norm <- CONSTANd(leish)$normalized_data
+```
+
+Let's make a PCA plot (optionally impute `NA` as zero) before and after normalization to see if it was successful:
+```{r,fig.align='center',fig.wide=TRUE,fig.cap="LOG samples (blue) are separated more clearly by PC1 from the STAT samples (red) in the Leishmania data set after CONSTANd normalization."}
+leish[is.na(leish)] <- 0
+# scale raw data
+leish.pc.raw <- prcomp(x=t(leish), scale. = T)
+leish.norm[is.na(leish.norm)] <- 0
+# CONSTANd already scaled the data
+leish.pc.norm <- prcomp(x=t(leish.norm))
+par(mfrow=c(1,2))
+colors = ifelse(conditions == 'LOG', 'blue', 'red')
+plot(leish.pc.raw$x[,'PC1'], leish.pc.raw$x[,'PC2'], xlab='PC1', ylab='PC2', main='raw counts', col=colors)
+plot(leish.pc.norm$x[,'PC1'], leish.pc.norm$x[,'PC2'], xlab='PC1', ylab='PC2', main='normalized counts', col=colors)
+```
+Indeed, the PCA plot indicates that the first principal component, which is the direction along which there is most varability in the measurements, successfully defines a separation between the biological conditions. In other words: after normalization the biological differences between the samples dominate any other sources of systematic bias.
+
+# Normalization across multiple assays
+Here, we demonstrate multiple IPSs involved in one experiment may be normalized separately as if they were individual assays (see previous section), after which they may be re-combined for joint analysis.
+We demonstrate CONSTANd normalization across multiple assays using the [Organs example data set](https://qcquan.net/static/Organs_input.zip) from [QCQuan](https://qcquan.net/), a proteomics webtool built around the CONSTANd algorithm. It entails samples from 8 different mouse organs in biological quadruplicate, whose peptides have been measured in 4 different instrument runs (1 per mouse) using TMT-labeled (8-plex) tandem mass spectrometry.
+```{r,echo=FALSE, fig.align='center',fig.wide=TRUE, out.width='50%', fig.scap="short",fig.cap='Organs data set experimental setup: 8 mouse organ samples spread across 4 TMT 8-plex tndem-MS runs, one for each mouse. Image source: Bailey, Derek J., et al. "Intelligent data acquisition blends targeted and discovery methods." Journal of proteome research 13.4 (2014): 2152-2161. https://doi.org/10.1021/pr401278j.'}
+par(mfrow=c(1,1))
+include_graphics('organ_experiment_design.png')
+```
+
+After unzipping, load this PSM-level data set and clean it up just enough to demonstrate the effect of normalization. In a proper analysis one may want to do additional checks, cleaning, and summarization steps. However, none of those affect the use of CONSTANd and one can use CONSTANd on the PSM, peptide or protein level, although the outcome may of course differ.
+```{r}
+# load
+BR1 <- read.csv('BR1_a.txt', sep='\t')
+BR2 <- read.csv('BR2_a.txt', sep='\t')
+BR3 <- read.csv('BR3_a.txt', sep='\t')
+BR4 <- read.csv('BR4_a.txt', sep='\t')
+organs <- list(BR1, BR2, BR3, BR4)
+# load extra functions to clean the data set
+source('functions.R')
+organs <- clean_organs(organs)
+# the data has been summarized to peptide level
+head(rownames(organs[[1]]))
+# only the quantification columns were kept
+quanCols <- colnames(organs[[1]])
+quanCols
+```
+
+In MS-based proteomics, anlyzing samples even with the same intrument on the same day but in a different run can cause systematic bias between the runs. Therefore, we normalize each BR run dataframe independently:
+```{r}
+organs.norm <- lapply(organs, function(x) CONSTANd(x[,quanCols])$normalized_data)
+```
+
+However, after CONSTANd normalization these values become comparable. We demonstrate this again using PCA plots, after merging the non-normalized data frames and merging the normalized data frames. Let's prepare the merge by doing some administration on our column names.
+```{r}
+# make unique quantification column names
+for (i in 1:length(organs)) { colnames(organs[[i]]) <- paste0('BR', i, '_', colnames(organs[[i]])) }
+for (i in 1:length(organs)) { colnames(organs.norm[[i]]) <- paste0('BR', i, '_', colnames(organs.norm[[i]])) }
+# inner merge on rownames
+organs.df <- Reduce(function(x, y) { tmp <- merge(x, y, by = 0, all = F); rownames(tmp) <- tmp$Row.names; tmp$Row.names <- NULL; return(tmp) }, organs)
+organs.norm.df <- Reduce(function(x, y) { tmp <- merge(x, y, by = 0, all = F); rownames(tmp) <- tmp$Row.names; tmp$Row.names <- NULL; return(tmp) }, organs.norm)
+# construct the study design from the dataset schema file and arrange it properly
+study.design <- read.csv("coonSchema_NEW.tsv", sep='\t', header = F)
+study.design <- rearrange_organs_design(study.design)
+```
+
+We can now make PCA plots using data from all 4 runs:
+```{r}
+# PCA can't deal with NA values: impute as zero (this makes sense in a multiplex)
+organs.df[is.na(organs.df)] <- 0
+organs.norm.df[is.na(organs.norm.df)] <- 0
+# scale raw data
+organs.pc <- prcomp(x=t(organs.df), scale. = T)
+# CONSTANd already scaled the data
+organs.norm.pc <- prcomp(x=t(organs.norm.df))
+```
+
+The randomized study design and separate design file makes coloring the PCA plot a bit tedious.
+```{r}
+# prepare plot color mappings
+organs.pcdf <- as.data.frame(organs.pc$x)
+organs.pcdf <- merge(organs.pcdf, study.design, by=0)
+rownames(organs.pcdf) <- organs.pcdf$Row.names
+organs.norm.pcdf <- as.data.frame(organs.norm.pc$x)
+organs.norm.pcdf <- merge(organs.norm.pcdf, study.design, by=0)
+rownames(organs.norm.pcdf) <- organs.norm.pcdf$Row.names
+```
+
+```{r,echo=F,fig.wide=TRUE,fig.cap="Before normalization, the samples in the Organs data set are all scattered across the PCA plot. After normalization, they are correctly grouped according to biological condition, even though all 4 samples in each group have been measured in a different MS run. The big separation in PC1 suggests that the muscle tissue is very different from the tissues of other types of organs!"}
+plot1 <- ggplot(organs.pcdf, aes(x=PC1, y=PC2, color=condition)) + ggtitle("raw intensities") + geom_point() + theme_bw() + theme(legend.position = "none") + theme(plot.title = element_text(hjust=0.5))
+plot2 <- ggplot(organs.norm.pcdf, aes(x=PC1, y=PC2, color=condition)) + ggtitle("normalized intensities") + geom_point() + theme_bw() + theme(legend.position = "right") + theme(plot.title = element_text(hjust=0.5))
+shared_legend <- extract_legend(plot2)
+grid.arrange(arrangeGrob(plot1, plot2 + theme(legend.position = "none"), ncol = 2), shared_legend, widths=c(5,1))
+```
+
+# Optional arguments
+## target
+The variable `target=1` sets the mean quantification value in each row and column during the raking process. After normalization, each row and column mean in the matrix will be equal to `target` up to a certain `precision` (see further). Setting a custom value does not affect the normalization procedure, but _does_ scale the output values. Caution: quantification values from matrices normalized with different target values may under normal circumstances _not_ be directly compared. Change this value only when you need to and when you know what you are doing.
+
+## maxIterations and precision
+The variable `maxIterations=50` is an integer value that defines a hard stop on the number of raking cycles, forcing the algorithm to return even if the desired precision was not reached (a warning will be printed). The variable `precision=1e-5)` defines the stopping criteria based on the L1-norm as defined by Friedrich Pukelsheim, Bruno Simeone in "On the Iterative Proportional Fitting Procedure: Structure of Accumulation Points and L1-Error Analysis". 
+
+# Session info
+```{r}
+sessionInfo()
+```
+
