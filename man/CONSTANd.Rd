@@ -30,8 +30,8 @@ CONSTANd(data, precision=1e-5, maxIterations=50, target=1)
 \author{Joris Van Houtven (joris.vanhoutven@uhasselt.be), Geert Jan Bex <geertjan.bex@uhasselt.be>, Dirk Valkenborg <dirk.valkenborg@uhasselt.be>}
 
 \examples{
-\donttest{
-# generic use
+# generic use (mock data)
+data_matrix <- matrix(runif(20), c(5,4))
 normalized_matrix <- CONSTANd(data_matrix)$normalized_data
 
 # customize parameters
@@ -41,7 +41,6 @@ result <- CONSTANd(data_matrix, precision=1e-3, maxIterations=30)$normalized_dat
 normalized_matrix <- result$normalized_matrix
 num_iterations_performed <- length(result$convergence_trail)
 attained_precision <- result$convergence_trail[num_iterations_performed]
-}
 }
 
 \references{
