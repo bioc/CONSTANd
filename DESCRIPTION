@@ -12,7 +12,7 @@ Encoding: UTF-8
 LazyData: true
 biocViews: MassSpectrometry, Cheminformatics, Normalization, Preprocessing, DifferentialExpression, Genetics, Transcriptomics, Proteomics
 NeedsCompilation: no
-Depends: 
+Depends: R (>= 4.0)
 Imports:
 Suggests: BiocStyle, knitr, rmarkdown, SummarizedExperiment, dplyr, tibble, tidyr, ggplot2, gridExtra
 Enhances:
@@ -22,4 +22,3 @@ URL: qcquan.net/constand
 Video: 
 Collates: 
 VignetteBuilder: knitr
-
