@@ -3,17 +3,17 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Data normalization by matrix raking}
 \description{
-  Normalizes the data matrix by raking the Nrows by Ncols matrix such that the row means and column means equal Ncols and Nrows, respectively.
+    Normalizes the data matrix by raking the Nrows by Ncols matrix such that the row means and column means equal Ncols and Nrows, respectively.
 }
 \usage{
 CONSTANd(data, precision=1e-5, maxIterations=50, target=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{data}{Nrows by Ncols matrix.}
-  \item{precision}{Combined allowed deviation (residual error) of col and row means from target value.}
-  \item{maxIterations}{Maximum amount of iterations (1x row and 1x col per iteration).}
-  \item{target}{The mean value of quantifications in each row and column after normalization.}
+    \item{data}{Nrows by Ncols matrix.}
+    \item{precision}{Combined allowed deviation (residual error) of col and row means from target value.}
+    \item{maxIterations}{Maximum amount of iterations (1x row and 1x col per iteration).}
+    \item{target}{The mean value of quantifications in each row and column after normalization.}
 }
 
 \details{
@@ -21,10 +21,10 @@ CONSTANd(data, precision=1e-5, maxIterations=50, target=1)
 }
 
 \value{
-  \item{normalized_data}{Normalized data matrix `K=RAS` in the RAS-formulation of the problem.}
-  \item{convergence_trail}{Precision acquired after each raking iteration (last value is the final precision).}
-  \item{R}{Row multipliers in the `K=RAS` formulation of the problem.}
-  \item{S}{Column multipliers in the `K=RAS` formulation of the problem.}
+    \item{normalized_data}{Normalized data matrix `K=RAS` in the RAS-formulation of the problem.}
+    \item{convergence_trail}{Precision acquired after each raking iteration (last value is the final precision).}
+    \item{R}{Row multipliers in the `K=RAS` formulation of the problem.}
+    \item{S}{Column multipliers in the `K=RAS` formulation of the problem.}
 }
 
 \author{Joris Van Houtven (joris.vanhoutven@uhasselt.be), Geert Jan Bex <geertjan.bex@uhasselt.be>, Dirk Valkenborg <dirk.valkenborg@uhasselt.be>}
@@ -44,9 +44,9 @@ attained_precision <- result$convergence_trail[num_iterations_performed]
 }
 
 \references{
-  Maes, Evelyne, et al. "CONSTANd: A normalization method for isobaric labeled spectra by constrained optimization." Molecular & Cellular Proteomics 15.8 (2016): 2779-2790. \url{https://doi.org/10.1074/mcp.M115.056911}. Accessed 18 Oct. 2020.
+    Maes, Evelyne, et al. "CONSTANd: A normalization method for isobaric labeled spectra by constrained optimization." Molecular & Cellular Proteomics 15.8 (2016): 2779-2790. \url{https://doi.org/10.1074/mcp.M115.056911}. Accessed 18 Oct. 2020.
 
-  Bacharach, Michael. "Estimating Nonnegative Matrices from Marginal Data." International Economic Review, vol. 6, no. 3, 1965, pp. 294–310. JSTOR, \url{https://doi.org/10.2307\%2F2525582}. Accessed 18 Oct. 2020.
+    Bacharach, Michael. "Estimating Nonnegative Matrices from Marginal Data." International Economic Review, vol. 6, no. 3, 1965, pp. 294–310. JSTOR, \url{https://doi.org/10.2307\%2F2525582}. Accessed 18 Oct. 2020.
 }
 
 \keyword{manip}% at least one, from doc/KEYWORDS
