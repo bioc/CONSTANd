@@ -30,7 +30,7 @@ CONSTANd(data, precision=1e-5, maxIterations=50, target=1)
 \author{Joris Van Houtven (joris.vanhoutven@uhasselt.be), Geert Jan Bex <geertjan.bex@uhasselt.be>, Dirk Valkenborg <dirk.valkenborg@uhasselt.be>}
 
 \examples{
-\dontrun{
+\donttest{
 # generic use
 normalized_matrix <- CONSTANd(data_matrix)$normalized_data
 
