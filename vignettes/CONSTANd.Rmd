@@ -138,8 +138,15 @@ However, after CONSTANd normalization these values become comparable. We demonst
 for (i in seq_along(organs)) { colnames(organs[[i]]) <- paste0('BR', i, '_', colnames(organs[[i]])) }
 for (i in seq_along(organs)) { colnames(organs.norm[[i]]) <- paste0('BR', i, '_', colnames(organs.norm[[i]])) }
 # inner merge on rownames
-organs.df <- Reduce(function(x, y) { tmp <- merge(x, y, by = 0, all = FALSE); rownames(tmp) <- tmp$Row.names; tmp$Row.names <- NULL; return(tmp) }, organs)
-organs.norm.df <- Reduce(function(x, y) { tmp <- merge(x, y, by = 0, all = FALSE); rownames(tmp) <- tmp$Row.names; tmp$Row.names <- NULL; return(tmp) }, organs.norm)
+merge_list_of_dataframes <- function(list.dfs) {
+    return(Reduce(function(x, y) {
+        tmp <- merge(x, y, by = 0, all = FALSE)
+        rownames(tmp) <- tmp$Row.names
+        tmp$Row.names <- NULL
+        return(tmp)
+    }, list.dfs))}
+organs.df <- merge_list_of_dataframes(organs)
+organs.norm.df <- merge_list_of_dataframes(organs.norm)
 ```
 
 We can now make PCA plots using data from all 4 runs:
