@@ -60,7 +60,8 @@ leish <- read.csv("GSE95353_SL_SEQ_LOGSTAT_counttable.txt" , sep='\t')
 We only need the LOG and STAT samples, which correspond to biological quadruplicates of Leishmania in two lifestages (LOG and STAT).
 ```{r}
 rownames(leish) <- leish$gene
-leish <- leish[, c("SL.LOG1", "SL.LOG2", "SL.LOG3", "SL.LOG4", "SL.STAT1", "SL.STAT2", "SL.STAT3", "SL.STAT4")]
+leish <- leish[, c("SL.LOG1", "SL.LOG2", "SL.LOG3", "SL.LOG4", 
+                   "SL.STAT1", "SL.STAT2", "SL.STAT3", "SL.STAT4")]
 conditions <- c(rep("LOG", 4), rep("STAT", 4))
 ```
 
@@ -84,8 +85,10 @@ leish.norm[is.na(leish.norm)] <- 0
 leish.pc.norm <- prcomp(x=t(leish.norm))
 par(mfrow=c(1,2))
 colors = ifelse(conditions == 'LOG', 'blue', 'red')
-plot(leish.pc.raw$x[,'PC1'], leish.pc.raw$x[,'PC2'], xlab='PC1', ylab='PC2', main='raw counts', col=colors)
-plot(leish.pc.norm$x[,'PC1'], leish.pc.norm$x[,'PC2'], xlab='PC1', ylab='PC2', main='normalized counts', col=colors)
+plot(leish.pc.raw$x[,'PC1'], leish.pc.raw$x[,'PC2'], 
+     xlab='PC1', ylab='PC2', main='raw counts', col=colors)
+plot(leish.pc.norm$x[,'PC1'], leish.pc.norm$x[,'PC2'], 
+     xlab='PC1', ylab='PC2', main='normalized counts', col=colors)
 ```
 Indeed, the PCA plot indicates that the first principal component, which is the direction along which there is most varability in the measurements, successfully defines a separation between the biological conditions. In other words: after normalization the biological differences between the samples dominate any other sources of systematic bias.
 
@@ -135,8 +138,10 @@ organs.norm <- lapply(organs, function(x) CONSTANd(x[,quanCols])$normalized_data
 However, after CONSTANd normalization these values become comparable. We demonstrate this again using PCA plots, after merging the non-normalized data frames and merging the normalized data frames. Let's prepare the merge by doing some administration on our column names.
 ```{r}
 # make unique quantification column names
-for (i in seq_along(organs)) { colnames(organs[[i]]) <- paste0('BR', i, '_', colnames(organs[[i]])) }
-for (i in seq_along(organs)) { colnames(organs.norm[[i]]) <- paste0('BR', i, '_', colnames(organs.norm[[i]])) }
+for (i in seq_along(organs)) { 
+  colnames(organs[[i]]) <- paste0('BR', i, '_', colnames(organs[[i]])) }
+for (i in seq_along(organs)) { 
+  colnames(organs.norm[[i]]) <- paste0('BR', i, '_', colnames(organs.norm[[i]])) }
 # inner merge on rownames
 merge_list_of_dataframes <- function(list.dfs) {
     return(Reduce(function(x, y) {
@@ -172,10 +177,11 @@ rownames(organs.norm.pcdf) <- organs.norm.pcdf$Row.names
 ```
 
 ```{r,echo=FALSE,fig.wide=TRUE,fig.cap="Before normalization, the samples in the Organs data set are all scattered across the PCA plot. After normalization, they are correctly grouped according to biological condition, even though all 4 samples in each group have been measured in a different MS run. The big separation in PC1 suggests that the muscle tissue is very different from the tissues of other types of organs!"}
-plot1 <- ggplot(organs.pcdf, aes(x=PC1, y=PC2, color=condition)) + ggtitle("raw intensities") + geom_point() + theme_bw() + theme(legend.position = "none") + theme(plot.title = element_text(hjust=0.5))
-plot2 <- ggplot(organs.norm.pcdf, aes(x=PC1, y=PC2, color=condition)) + ggtitle("normalized intensities") + geom_point() + theme_bw() + theme(legend.position = "right") + theme(plot.title = element_text(hjust=0.5))
-shared_legend <- extract_legend(plot2)
-grid.arrange(arrangeGrob(plot1, plot2 + theme(legend.position = "none"), ncol = 2), shared_legend, widths=c(5,1))
+p1 <- ggplot(organs.pcdf, aes(x=PC1, y=PC2, color=condition)) + ggtitle("raw intensities") + geom_point() + theme_bw() + theme(legend.position = "none") + theme(plot.title = element_text(hjust=0.5))
+p2 <- ggplot(organs.norm.pcdf, aes(x=PC1, y=PC2, color=condition)) + ggtitle("normalized intensities") + geom_point() + theme_bw() + theme(legend.position = "right") + theme(plot.title = element_text(hjust=0.5))
+shared_legend <- extract_legend(p2)
+grid.arrange(arrangeGrob(p1, p1 + theme(legend.position = "none"), ncol = 2), 
+             shared_legend, widths=c(5,1))
 ```
 
 # Optional arguments

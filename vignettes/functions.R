@@ -11,7 +11,9 @@ clean_organs <- function(organs) {
     # summarize to peptide level (median of each channel's quantification value for each peptide)
     organs <- lapply(organs, function(x) as.data.frame(x %>% group_by(Sequence) %>% summarise_at(.vars = quanCols, .funs = median, na.rm=TRUE) %>% drop_na(., Sequence)))
     ## keep only quantification and peptide info; set rownames to peptide sequences
-    for (i in seq_along(organs)) { rownames(organs[[i]]) <- organs[[i]]$Sequence; organs[[i]]$Sequence <- NULL}
+    for (i in seq_along(organs)) {
+      rownames(organs[[i]]) <- organs[[i]]$Sequence
+      organs[[i]]$Sequence <- NULL}
     # remove X from colnames
     organs <- lapply(organs, setNames, nm = unname(unlist(lapply(strsplit(quanCols, 'X'), function(x) x[[2]]))))
     quanCols
