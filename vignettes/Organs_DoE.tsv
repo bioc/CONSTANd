@@ -1,1 +1,4 @@
-/home/pdiracdelta/Documents/UHasselt/CONSTANd/data/JCoon/coonSchema_NEW.tsv
+BR1	kidney:126	cerebellum:127C	muscle:127N	cerebrum:128C	lung:129C	liver:129N	heart:130C	spleen:131
+BR2	kidney:127N	cerebellum:126	muscle:128C	cerebrum:130C	lung:129N	liver:127C	heart:129C	spleen:131
+BR3	kidney:131	cerebellum:130C	muscle:128C	cerebrum:129C	lung:126	liver:127C	heart:129N	spleen:127N
+BR4	kidney:127C	cerebellum:128C	muscle:126	cerebrum:131	lung:129C	liver:130C	heart:129N	spleen:127N
