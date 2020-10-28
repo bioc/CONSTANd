@@ -35,7 +35,7 @@ data_matrix <- matrix(runif(20), c(5,4))
 normalized_matrix <- CONSTANd(data_matrix)$normalized_data
 
 # customize parameters
-result <- CONSTANd(data_matrix, precision=1e-3, maxIterations=30)$normalized_data
+result <- CONSTANd(data_matrix, precision=1e-3, maxIterations=30)
 
 # explore parts of the result object
 normalized_matrix <- result$normalized_matrix
