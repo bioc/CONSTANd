@@ -48,7 +48,7 @@ CONSTANd <- function(data, precision=1e-5, maxIterations=50, target=1){
         i = i+1
     }
     if (i == maxIterations) {
-        warning(cat(sprintf("Max number of CONSTANd iterations (%i) reached. Attained precision: %.5f", maxIterations, convergence)))
+        warning(sprintf("\nMax number of CONSTANd iterations (%i) reached. Attained precision: %.5f", maxIterations, convergence))
     }
     result = list("normalized_data" = data, "convergence_trail" = convergence_trail[seq(2*i)], "R" = R, "S" = S)
     return(result)
