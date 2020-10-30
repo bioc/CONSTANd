@@ -17,6 +17,15 @@ CONSTANd <- function(data, precision=1e-5, maxIterations=50, target=1){
     # Return the normalized version of the input data (matrix) as an ndarray, as
     # well as the convergence trail (residual error after each iteration) and the
     # row and column multipliers R and S.
+    if (any(data[!is.na(data)]<0)) {
+        stop("Negative values detected in quantification matrix.
+             Are you using log-transformed ratio's?
+             If so, use intensities instead.")
+    }
+    if (any(data[!is.na(data)]==0)) {
+        warning("Zeros in quantification matrix detected; replacing with NA.")
+        data[data==0] <- NA
+    }
 
     Nrows = nrow(data)
     Ncols = ncol(data)

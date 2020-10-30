@@ -1,3 +1,8 @@
+Version 0.99.4
++ negative input values are not allowed
++ warn and automatically replace zero input values by NA
++ bugfix in warning message formatting
+
 Version 0.99.3
 + bugfix in float specification of warning message
 

@@ -67,11 +67,9 @@ conditions <- c(rep("LOG", 4), rep("STAT", 4))
 
 Let's remove genes with low count numbers (`median > 0`) for good practice, and make sure that zero counts are replaced by `NA` to use CONSTANd.
 ```{r}
-# first set NA to 0 for clculating the row medians
+# first set NA to 0 for calculating the row medians
 leish[is.na(leish)] <- 0
 leish <- leish[apply(leish, 1, median, na.rm = FALSE) > 0,]
-# now set 0 to NA for using CONSTANd
-leish[leish == 0] <- NA
 leish.norm <- CONSTANd(leish)$normalized_data
 ```
 
