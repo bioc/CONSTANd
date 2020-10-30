@@ -1,3 +1,6 @@
+Version 0.99.3
++ bugfix in float specification of warning message
+
 Version 0.99.2
 + bugfix remove stray Rproj file
 
