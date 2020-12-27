@@ -13,7 +13,7 @@ LazyData: true
 biocViews: MassSpectrometry, Cheminformatics, Normalization, Preprocessing, DifferentialExpression, Genetics, Transcriptomics, Proteomics
 NeedsCompilation: no
 Depends: R (>= 4.1)
-Suggests: BiocStyle, knitr, rmarkdown, tidyr, ggplot2, gridExtra
+Suggests: BiocStyle, knitr, rmarkdown, tidyr, ggplot2, gridExtra, magick
 SystemRequirements: 
 BugReports: https://github.com/PDiracDelta/CONSTANd/issues
 URL: qcquan.net/constand
