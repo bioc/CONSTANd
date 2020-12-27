@@ -15,6 +15,6 @@ NeedsCompilation: no
 Depends: R (>= 4.1)
 Suggests: BiocStyle, knitr, rmarkdown, tidyr, ggplot2, gridExtra
 SystemRequirements: 
-BugReports: https://gitlab.com/uhasselt-bioinfo/constand-r/
+BugReports: https://github.com/PDiracDelta/CONSTANd/issues
 URL: qcquan.net/constand
 VignetteBuilder: knitr
