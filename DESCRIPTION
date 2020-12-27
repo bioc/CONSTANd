@@ -13,12 +13,8 @@ LazyData: true
 biocViews: MassSpectrometry, Cheminformatics, Normalization, Preprocessing, DifferentialExpression, Genetics, Transcriptomics, Proteomics
 NeedsCompilation: no
 Depends: R (>= 4.0)
-Imports:
 Suggests: BiocStyle, knitr, rmarkdown, SummarizedExperiment, dplyr, tibble, tidyr, ggplot2, gridExtra
-Enhances:
 SystemRequirements: 
 BugReports: https://gitlab.com/uhasselt-bioinfo/constand-r/
 URL: qcquan.net/constand
-Video: 
-Collates: 
 VignetteBuilder: knitr
