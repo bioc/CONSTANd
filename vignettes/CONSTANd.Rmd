@@ -53,7 +53,7 @@ The data matrix is an `Nrows` by `Ncols` matrix (e.g. an `assay` from a `Summari
 
 First, let's load the 'Leishmania' [mRNA-level data set from GEO](https://ftp.ncbi.nlm.nih.gov/geo/series/GSE95nnn/GSE95353/suppl/GSE95353_SL_SEQ_LOGSTAT_counttable.txt.gz) (Gene Expression Omnibus) with identifier GSE95353. You can either download and unzip it yourself, are use the file that comes with this package. <!--Cuypers, B., Domagalska, M.A., Meysman, P. et al. Multiplexed Spliced-Leader Sequencing: A high-throughput, selective method for RNA-seq in Trypanosomatids . Sci Rep 7, 3725 (2017). https://doi.org/10.1038/s41598-017-03987-0-->
 ```{r}
-leish <- read.csv("GSE95353_SL_SEQ_LOGSTAT_counttable.txt" , sep='\t')
+leish <- read.csv("../inst/extdata/GSE95353_SL_SEQ_LOGSTAT_counttable.txt" , sep='\t')
 ```
 
 We only need the LOG and STAT samples, which correspond to biological quadruplicates of Leishmania in two lifestages (LOG and STAT).
@@ -102,7 +102,7 @@ You can either download the original data from the web, unzip it and set `LOAD_O
 ```{r}
 LOAD_ORIGINAL = FALSE
 # load extra functions to clean the original data and study design files
-source('functions.R')
+source('../inst/script/functions.R')
 if (LOAD_ORIGINAL) {  # load original from web
     BR1 <- read.csv('Organs_PSMs_1.txt', sep='\t')
     BR2 <- read.csv('Organs_PSMs_2.txt', sep='\t')
@@ -111,10 +111,10 @@ if (LOAD_ORIGINAL) {  # load original from web
     organs <- list(BR1, BR2, BR3, BR4)
     organs <- clean_organs(organs)
 } else {  # load cleaned file that comes with this package
-    organs <- readRDS('organs_cleaned.RDS')
+    organs <- readRDS('../inst/extdata/organs_cleaned.RDS')
 }
 # construct the study design from the QCQuan DoE file and arrange it properly
-study.design <- read.csv("Organs_DoE.tsv", sep='\t', header = FALSE)
+study.design <- read.csv("../inst/extdata/Organs_DoE.tsv", sep='\t', header = FALSE)
 study.design <- rearrange_organs_design(study.design)
 ```
 

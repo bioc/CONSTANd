@@ -41,7 +41,7 @@ rearrange_organs_design <- function(study.design) {
         tbl[tbl$run==paste0('BR',i),]$condition[correct.order] <- ss.conditions
     }
     tbl <- tbl %>% unite(uniqueChannel, c(run,channel), remove = FALSE)
-    return(column_to_rownames(tbl, 'uniqueChannel'))
+    return(tibble::column_to_rownames(tbl, 'uniqueChannel'))
 }
 
 extract_legend <- function(my_ggp) {
