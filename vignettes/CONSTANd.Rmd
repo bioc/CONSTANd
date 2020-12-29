@@ -17,7 +17,7 @@ vignette: >
 ---
 
 ```{r setup, include=TRUE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,dev="CairoPNG")
 library(knitr)
 library(tidyr)
 library(ggplot2)
