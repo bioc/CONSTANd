@@ -11,7 +11,7 @@
 # Analysis"
 #
 # (c) Dirk Valkenborg & Jef Hooyberghs, 2014
-# Ported to R by Joris Van Houtven, 2020
+# Updated and ported to R by Joris Van Houtven, 2020
 
 CONSTANd <- function(data, precision=1e-5, maxIterations=50, target=1){
     # Return the normalized version of the input data (matrix) as an ndarray, as
