@@ -38,18 +38,18 @@ To load `CONSTANd`, type the following command after launching R.
 library(CONSTANd)
 ```
 
-## Data assumptions
-To warrant that the normalization procedure itself is not biased, three assumptions about the data are made (as for any type of data-driven normalization method) which may be verified by making MA-plots:
+## Data assumptions {#s:assumptions}
+To warrant that the normalization procedure itself is not biased, three assumptions about the data are made (as for any type of data-driven normalization method) which may be verified by making MA-plots (see \@ref(s:maplots)):
 
-- __The majority of entities peptides/genes/... are not differentially expressed__, to avoid a bias in the estimate of the mean value. It is assumed that up-down shifts are not due to biological causes. The reference set used in the normalization step is the set of all peptides identified in the experiment.<br>
+- __The majority of features (peptides/genes/...) are not differentially expressed__, to avoid a bias in the estimate of the mean value. It is assumed that up-down shifts are not due to biological causes. The reference set used in the normalization step is the set of all peptides identified in the experiment.<br>
 _MA-plot: the observations form a single 'cloud' with a dense center and less dense edges, as opposed to, for instance, two clouds or a cloud with uniform density_.
-- __The number of up-regulated peptides/genes/... is roughly equal to the number of down-regulated ones__. If the data were skewed, this would lead to a bias in the normalization result.<br>
+- __The number of up-regulated features is roughly equal to the number of down-regulated ones__. If the data were skewed, this would lead to a bias in the normalization result.<br>
 _MA-plot: the cloud of observations exhibits a bilateral symmetry about some axis (usually horizontal, but inclinations may occur)_.
 - __Any systematic bias present is linearly proportional to the magnitude of the quantification values__. Only this way it is possible to find one appropriate normalization factor for each quantification sample.<br>
 _MA-plot: the axis of bilateral symmetry is a straight line (which may be inclined), i.e., the moving average M-values of the central cloud form an approximately __straight__ line_.
 
 # Normalizing a data matrix (single assay)
-The data matrix is an `Nrows` by `Ncols` matrix (e.g. an `assay` from a `SummarizedExperiment`), representing quantification values of any kind, as long as they form an __identically processed (sub)set (IPS)__. An IPS consists of measurements from biological samples who have been processed from biological harvesting of the tissue to the detection and quantitation of the entities of interest (RNA, proteins, ...) in near-identical fashion. In practice, this means that there exist no factors (_except_ those of _biological interest_) which may cause a systematic bias in the quantification values. One _counter_example in proteomics is samples measured on a different day or a different instrument, one _counter_example in RNA-seq would be samples measured after using different library preparation protocols. In the next section, we demonstrate how in such such cases the IPSs are normalized separately as if they were individual assays (see this section), after which they may be re-combined.
+The data matrix is an `Nrows` by `Ncols` matrix (e.g. an `assay` from a `SummarizedExperiment`), representing quantification values of any kind, as long as they form an __identically processed (sub)set (IPS)__. An IPS consists of measurements from biological samples who have been processed from biological harvesting of the tissue to the detection and quantitation of the features of interest (RNA, proteins, ...) in near-identical fashion. In practice, this means that there exist no factors (_except_ those of _biological interest_) which may cause a systematic bias in the quantification values. One _counter_example in proteomics is samples measured on a different day or a different instrument, one _counter_example in RNA-seq would be samples measured after using different library preparation protocols. In the next section, we demonstrate how in such such cases the IPSs are normalized separately as if they were individual assays (see this section), after which they may be re-combined.
 
 First, let's load the 'Leishmania' [mRNA-level data set from GEO](https://ftp.ncbi.nlm.nih.gov/geo/series/GSE95nnn/GSE95353/suppl/GSE95353_SL_SEQ_LOGSTAT_counttable.txt.gz) (Gene Expression Omnibus) with identifier GSE95353. You can either download and unzip it yourself, are use the file that comes with this package. <!--Cuypers, B., Domagalska, M.A., Meysman, P. et al. Multiplexed Spliced-Leader Sequencing: A high-throughput, selective method for RNA-seq in Trypanosomatids . Sci Rep 7, 3725 (2017). https://doi.org/10.1038/s41598-017-03987-0-->
 ```{r}
@@ -177,7 +177,7 @@ rownames(organs.norm.pcdf) <- organs.norm.pcdf$Row.names
 p1 <- ggplot(organs.pcdf, aes(x=PC1, y=PC2, color=condition)) + ggtitle("raw intensities") + geom_point() + theme_bw() + theme(legend.position = "none") + theme(plot.title = element_text(hjust=0.5))
 p2 <- ggplot(organs.norm.pcdf, aes(x=PC1, y=PC2, color=condition)) + ggtitle("normalized intensities") + geom_point() + theme_bw() + theme(legend.position = "right") + theme(plot.title = element_text(hjust=0.5))
 shared_legend <- extract_legend(p2)
-grid.arrange(arrangeGrob(p1, p1 + theme(legend.position = "none"), ncol = 2), 
+grid.arrange(arrangeGrob(p1, p2 + theme(legend.position = "none"), ncol = 2), 
              shared_legend, widths=c(5,1))
 ```
 
