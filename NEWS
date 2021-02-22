@@ -1,3 +1,7 @@
+Version 0.99.5
++ depends: R4.1
++ updated BugReports link
+
 Version 0.99.4
 + negative input values are not allowed
 + warn and automatically replace zero input values by NA
