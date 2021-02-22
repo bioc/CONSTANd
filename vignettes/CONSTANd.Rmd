@@ -28,7 +28,7 @@ library(limma)
 
 # Introduction
 
-CONSTANd normalization has been proven to work on [mass spectrometry intensity values](https://doi.org/10.1074/mcp.M115.056911) (Maes et al.) in shotgun proteomics and on [RNA-seq count data](https://scholar.google.com/scholar?hl=nl&as_sdt=0%2C5&q=Constrained+standardization+of+count+data+from+massive+parallel+sequencing+joris+van+houtven) (Van Houtven et al.), but is in principle applicable to any kind of quantification matrices. It normalizes the data matrix `data` by raking (using the RAS method by Bacharach, see references) the Nrows by Ncols matrix such that the row means and column means equal 1. The result is a normalized data matrix `K=RAS`, a product of row mulipliers `R` and column multipliers `S` with the original matrix `A`. Missing information needs to be presented as `NA` values and not as zero values, because CONSTANd is able to ignore missing values when calculating the mean.
+CONSTANd normalization has been proven to work on [mass spectrometry intensity values](https://doi.org/10.1074/mcp.M115.056911) (Maes et al.) in shotgun proteomics and on [RNA-seq count data](https://scholar.google.com/scholar?hl=nl&as_sdt=0%2C5&q=Constrained+standardization+of+count+data+from+massive+parallel+sequencing+joris+van+houtven) (Van Houtven et al.), but is in principle applicable to any kind of quantification matrices, for instance in other -omics disciplines. It normalizes the data matrix `data` by raking (using the RAS method by Bacharach, see references) the Nrows by Ncols matrix such that the row means and column means equal 1. The result is a normalized data matrix `K=RAS`, a product of row mulipliers `R` and column multipliers `S` with the original matrix `A`. Missing information needs to be presented as `NA` values and not as zero values, because CONSTANd is able to ignore missing values when calculating the mean.
 
 ## Getting started
 The `CONSTANd` package has to be loaded to use the function.
@@ -40,7 +40,7 @@ library(CONSTANd)
 ```
 
 ## Data assumptions {#s:assumptions}
-To warrant that the normalization procedure itself is not biased, three assumptions about the data are made (as for any type of data-driven normalization method) which may be verified by making MA-plots (see \@ref(s:maplots)):
+To warrant that the normalization procedure itself is not biased, three assumptions about the data are made (as for any type of data-driven normalization method) which may be verified by making MA-plots (see examples in section \@ref(s:maplots)):
 
 - __The majority of features (peptides/genes/...) are not differentially expressed__, to avoid a bias in the estimate of the mean value. It is assumed that up-down shifts are not due to biological causes. The reference set used in the normalization step is the set of all peptides identified in the experiment.<br>
 _MA-plot: the observations form a single 'cloud' with a dense center and less dense edges, as opposed to, for instance, two clouds or a cloud with uniform density_.
@@ -48,6 +48,15 @@ _MA-plot: the observations form a single 'cloud' with a dense center and less de
 _MA-plot: the cloud of observations exhibits a bilateral symmetry about some axis (usually horizontal, but inclinations may occur)_.
 - __Any systematic bias present is linearly proportional to the magnitude of the quantification values__. Only this way it is possible to find one appropriate normalization factor for each quantification sample.<br>
 _MA-plot: the axis of bilateral symmetry is a straight line (which may be inclined), i.e., the moving average M-values of the central cloud form an approximately __straight__ line_.
+
+### Example of a _bad_ MA plot
+
+The following MA plot violates all three assumptions. In case your MA plots exhibit any of such characteristics, it is not advised to use CONSTANd - or any other data-driven method - to normalize your data, and to instead use advanced model-based approaches or, if appropriate, clean your data first.
+
+```{r,echo=FALSE, fig.align='center',fig.wide=TRUE, out.width='50%', fig.scap="short",fig.cap='This MA plot violates all assumptions: there is more than one cloud, there are more upregulated entities, and the bias changes strongly in the region with small magnitudes (A-values).'}
+par(mfrow=c(1,1))
+include_graphics('bad_MA.png')
+```
 
 # Normalizing a data matrix (single assay)
 The data matrix is an `Nrows` by `Ncols` matrix (e.g. an `assay` from a `SummarizedExperiment`), representing quantification values of any kind, as long as they form an __identically processed (sub)set (IPS)__. An IPS consists of measurements from biological samples who have been processed from biological harvesting of the tissue to the detection and quantitation of the features of interest (RNA, proteins, ...) in near-identical fashion. In practice, this means that there exist no factors (_except_ those of _biological interest_) which may cause a systematic bias in the quantification values. One _counter_example in proteomics is samples measured on a different day or a different instrument, one _counter_example in RNA-seq would be samples measured after using different library preparation protocols. In the next section, we demonstrate how in such such cases the IPSs are normalized separately as if they were individual assays (see this section), after which they may be re-combined.
@@ -193,7 +202,7 @@ The variable `maxIterations=50` is an integer value that defines a hard stop on 
 We recommend building upon the following function to make MA plots when using CONSTANd.
 
 ```{r}
-MAplot <- function(x,y,use.order=F, R=NULL, cex=1.6, showavg=T) {
+MAplot <- function(x,y,use.order=FALSE, R=NULL, cex=1.6, showavg=TRUE) {
   # make an MA plot of y vs. x that shows the rolling average,
   M <- log2(y/x)
   xlab = 'A'
@@ -217,7 +226,7 @@ MAplot <- function(x,y,use.order=F, R=NULL, cex=1.6, showavg=T) {
 }
 ```
 
-When verifying that input data adheres to the assumptions in \@ref(s:assumptions), one could use this function (preferably on each pair of biological conditions in each IPS) without optional arguments:
+When verifying that input data adheres to the assumptions in section \@ref(s:assumptions), one could use this function (preferably on each pair of biological conditions in each IPS) without optional arguments:
 
 ```{r}
 # Example for cerebrum and kidney conditions in run (IPS) 1 in the Organs data set.
@@ -247,7 +256,7 @@ MAplot(cerebrum1.norm, kidney1.norm, R=BR1.R)
 
 Note that this re-scaling only affects the horizontal A axis values, rendering such an MA plot comparable with one representing raw data. If the `S` vector from the output, then, has values close to 1 (meaning the sample sizes were very similar) then this MA plot will look a lot like the one with raw data.
 
-If, for some reason, you do not want to re-scale the normalized data using the R vector, you can also use `use.order=T` option to make the A axis (horizontal axis) display the data in the order they appear in the `MAplot` function inputs. In that case, the `R` argument has no effect.
+If, for some reason, you do not want to re-scale the normalized data using the R vector, you can also use `use.order=TRUE` option to make the A axis (horizontal axis) display the data in the order they appear in the `MAplot` function inputs. In that case, the `R` argument has no effect.
 
 # Subsequent Differential Expression Analysis (DEA)
 
