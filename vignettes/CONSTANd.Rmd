@@ -187,6 +187,67 @@ The variable `target=1` sets the mean quantification value in each row and colum
 ## maxIterations and precision
 The variable `maxIterations=50` is an integer value that defines a hard stop on the number of raking cycles, forcing the algorithm to return even if the desired precision was not reached (a warning will be printed). The variable `precision=1e-5)` defines the stopping criteria based on the L1-norm as defined by Friedrich Pukelsheim, Bruno Simeone in "On the Iterative Proportional Fitting Procedure: Structure of Accumulation Points and L1-Error Analysis". 
 
+# Making MA plots {#s:maplots}
+
+We recommend building upon the following function to make MA plots when using CONSTANd.
+
+```{r}
+MAplot <- function(x,y,use.order=F, R=NULL, cex=1.6, showavg=T) {
+  # make an MA plot of y vs. x that shows the rolling average,
+  M <- log2(y/x)
+  xlab = 'A'
+  if (!is.null(R)) {r <- R; xlab = "A (re-scaled)"} else r <- 1
+  A <- (log2(y/r)+log2(x/r))/2
+  if (use.order) {
+    orig.order <- order(A)
+    A <- orig.order
+    M <- M[orig.order]
+    xlab = "original rank of feature magnitude within IPS"
+  }
+  # select only finite values
+  use <- is.finite(M)
+  A <- A[use]
+  M <- M[use]
+  # plot
+  print(var(M))
+  plot(A, M, xlab=xlab, cex.lab=cex, cex.axis=cex)
+  # rolling average
+  if (showavg) { lines(lowess(M~A), col='red', lwd=5) }
+}
+```
+
+When verifying that input data adheres to the assumptions in \@ref(s:assumptions), one could use this function (preferably on each pair of biological conditions in each IPS) without optional arguments:
+
+```{r}
+# Example for cerebrum and kidney conditions in run (IPS) 1 in the Organs data set.
+cerebrum1.colnames <- rownames(study.design %>% dplyr::filter(run=='BR1', condition=='cerebrum'))
+kidney1.colnames <- rownames(study.design %>% dplyr::filter(run=='BR1', condition=='kidney'))
+cerebrum1.raw <- organs.df[,cerebrum1.colnames]
+kidney1.raw <- organs.df[,kidney1.colnames]
+# rowMeans in case of multiple columns
+if (!is.null(dim(cerebrum1.raw))) cerebrum1.raw <- rowMeans(cerebrum1.raw)  
+if (!is.null(dim(kidney1.raw))) kidney1.raw <- rowMeans(kidney1.raw)
+MAplot(cerebrum1.raw, kidney1.raw)
+```
+
+## MA plot trick for normalized data
+
+On the normalized data, then, we recommend using the `R` vector (be careful to select only non-discarded features) from the CONSTANd output to return a sensible measure of feature magnitude after normalization:
+
+```{r}
+cerebrum1.norm <- organs.norm.df[,cerebrum1.colnames]
+kidney1.norm <- organs.norm.df[,kidney1.colnames]
+# rowMeans in case of multiple columns
+if (!is.null(dim(cerebrum1.norm))) cerebrum1.norm <- rowMeans(cerebrum1.norm)  
+if (!is.null(dim(kidney1.norm))) kidney1.norm <- rowMeans(kidney1.norm)
+BR1.R <- organs.norm.obj[[1]]$R[rownames(organs.norm.df)]
+MAplot(cerebrum1.norm, kidney1.norm, R=BR1.R)
+```
+
+Note that this re-scaling only affects the horizontal A axis values, rendering such an MA plot comparable with one representing raw data. If the `S` vector from the output, then, has values close to 1 (meaning the sample sizes were very similar) then this MA plot will look a lot like the one with raw data.
+
+If, for some reason, you do not want to re-scale the normalized data using the R vector, you can also use `use.order=T` option to make the A axis (horizontal axis) display the data in the order they appear in the `MAplot` function inputs. In that case, the `R` argument has no effect.
+
 # Session info
 ```{r}
 sessionInfo()
