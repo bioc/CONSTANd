@@ -23,6 +23,7 @@ library(tidyr)
 library(ggplot2)
 library(gridExtra)
 library(magick)
+library(limma)
 ```
 
 # Introduction
@@ -247,6 +248,51 @@ MAplot(cerebrum1.norm, kidney1.norm, R=BR1.R)
 Note that this re-scaling only affects the horizontal A axis values, rendering such an MA plot comparable with one representing raw data. If the `S` vector from the output, then, has values close to 1 (meaning the sample sizes were very similar) then this MA plot will look a lot like the one with raw data.
 
 If, for some reason, you do not want to re-scale the normalized data using the R vector, you can also use `use.order=T` option to make the A axis (horizontal axis) display the data in the order they appear in the `MAplot` function inputs. In that case, the `R` argument has no effect.
+
+# Subsequent Differential Expression Analysis (DEA)
+
+You can use CONSTANd-normalized data for DEA just like you usually would (on non-transformed quantification values). For instance, you could perform a [moderated t-test](http://www.biostat.jhsph.edu/~kkammers/software/eupa/R_guide.html):
+
+```{r}
+get_design_matrix <- function(referenceCondition, study.design) {
+    # ANOVA-like design matrix for use in moderated_ttest, indicating group 
+    # (condition) membership of each entry in all_samples.
+    otherConditions = setdiff(unique(study.design$condition), referenceCondition)
+    all_samples = rownames(study.design)
+    N_samples = length(all_samples) 
+    N_conditions = 1+length(otherConditions)
+    design = matrix(rep(0,N_samples*N_conditions), c(N_samples, N_conditions))
+    design[, 1] <- 1  # reference gets 1 everywhere
+    rownames(design) <- all_samples
+    colnames(design) <- c(referenceCondition, otherConditions)
+    for (i in 1:N_samples) {  # for each channel in each condition, put a "1" in the design matrix.
+        design[as.character(rownames(study.design)[i]), as.character(study.design$condition[i])] <- 1 }
+    return(design)
+}
+moderated_ttest <- function(dat, design_matrix, scale) {
+  # inspired by http://www.biostat.jhsph.edu/~kkammers/software/eupa/R_guide.html
+  design_matrix <- design_matrix[match(colnames(dat), rownames(design_matrix)),]  # fix column order
+  reference_condition <- colnames(design_matrix)[colSums(design_matrix) == nrow(design_matrix)]
+  nfeatures <- dim(dat)[1]
+  
+  fit <- limma::eBayes(lmFit(dat, design_matrix))
+  
+  reference_averages <- fit$coefficients[,reference_condition]
+  logFC <- fit$coefficients
+  logFC <- log2((logFC+reference_averages)/reference_averages)
+  # correct the reference
+  logFC[,reference_condition] <- logFC[,reference_condition] - 1
+  # moderated q-value corresponding to the moderated t-statistic
+  if(nfeatures>1) { 
+    q.mod <- apply(X = fit$p.value, MARGIN = 2, FUN = p.adjust, method='BH') 
+  } else q.mod <- fit$p.value
+  return(list(logFC=logFC, qval=q.mod))
+}
+
+design_matrix <- get_design_matrix('cerebrum', study.design)
+result <- moderated_ttest(organs.norm.df, design_matrix)
+```
+
 
 # Session info
 ```{r}
