@@ -1,3 +1,6 @@
+Version 0.99.6
++ Update vignette: add MA plotting and DEA sections, and example of bad MA plot
+
 Version 0.99.5
 + depends: R4.1
 + updated BugReports link
