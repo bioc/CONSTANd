@@ -122,24 +122,23 @@ The data is now cleaned up just enough to demonstrate the effect of normalizatio
 ```{r}
 # the data has been summarized to peptide level
 head(rownames(organs[[1]]))
-# only the quantification columns were kept
+# only the quantification columns were kept, which here happen to be all of them
 quanCols <- colnames(organs[[1]])
 quanCols
+organs <- lapply(organs, function(x) x[,quanCols])
+# make unique quantification column names
+for (i in seq_along(organs)) { 
+  colnames(organs[[i]]) <- paste0('BR', i, '_', colnames(organs[[i]])) }
 ```
 
 In MS-based proteomics, anlyzing samples even with the same intrument on the same day but in a different run can cause systematic bias between the runs. Therefore, we normalize each BR run dataframe independently:
 ```{r}
-organs.norm <- lapply(organs, function(x) CONSTANd(x[,quanCols])$normalized_data)
+organs.norm.obj <- lapply(organs, function(x) CONSTANd(x))
+organs.norm <- lapply(organs.norm.obj, function(x) x$normalized_data)
 ```
 
 However, after CONSTANd normalization these values become comparable. We demonstrate this again using PCA plots, after merging the non-normalized data frames and merging the normalized data frames. Let's prepare the merge by doing some administration on our column names.
 ```{r}
-# make unique quantification column names
-for (i in seq_along(organs)) { 
-  colnames(organs[[i]]) <- paste0('BR', i, '_', colnames(organs[[i]])) }
-for (i in seq_along(organs)) { 
-  colnames(organs.norm[[i]]) <- paste0('BR', i, '_', colnames(organs.norm[[i]])) }
-# inner merge on rownames
 merge_list_of_dataframes <- function(list.dfs) {
     return(Reduce(function(x, y) {
         tmp <- merge(x, y, by = 0, all = FALSE)
