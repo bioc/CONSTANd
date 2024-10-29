@@ -1,7 +1,7 @@
 Package: CONSTANd
 Type: Package
 Title: Data normalization by matrix raking
-Version: 1.14.0
+Version: 1.15.0
 Date: 2020-10-30
 Authors@R: c(person("Joris", "Van Houtven", email="joris.vanhoutven@uhasselt.be", role=c("aut","trl")),
 			 person("Geert Jan", "Bex", email="geertjan.bex@uhasselt.be", role=c("trl")),
